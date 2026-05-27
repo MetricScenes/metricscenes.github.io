@@ -1,0 +1,634 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- <meta charset="utf-8">
+  <meta name="description"
+        content="Deformable Neural Radiance Fields creates free-viewpoint portraits (nerfies) from casually captured videos.">
+  <meta name="keywords" content="Nerfies, D-NeRF, NeRF">
+  <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+  <title>MetricScenes</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="publication-title is-size-1 publication-title">Honey, I Shrunk the Arc de Triomphe!</h1>
+
+          <!-- <div class="is-size-5 publication-venue">ECCV 2024</div> -->
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://kam1107.github.io/">Yuanbo Xiangli</a><sup>1,2</sup>, <a href="https://hanyuc.com/">Hanyu Chen</a><sup>1</sup>, Xueqing Tsang<sup>1</sup>, <a href="https://www.cs.cornell.edu/~snavely/">Noah Snavely</a><sup>1</sup>
+            </span>
+          </div>
+          <div class="affils">
+            <sup>1</sup>Cornell University &nbsp;&nbsp;&nbsp; <sup>2</sup>Shanghai Jiao Tong University
+          </div>
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="static/pdf/MetricScenes.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://huggingface.co/datasets/yx642/MetricScenes/tree/main"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+              </span>
+
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark"
+                   disabled
+                   aria-disabled="true"
+                   tabindex="-1">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+
+            </div>
+
+          </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="./static/images/MetricScens_teaser.png"
+        class="interpolation-image"
+        alt="Interpolate start reference image."/>
+      <h2 class="subtitle has-text-centered">
+        State-of-the-art monocular geometry estimation (MGE) methods like MoGe-2 exhibit a persistent scale-collapse phenomenon, where far-field structures are metrically shrunk and pulled toward the camera. 
+        According to Wikipedia, the real Arc de Triomphe has a physical width of 44.8m, but MoGe-2 predicts a metric point cloud of width just 18.8m. 
+        By fine-tuning on our proposed <strong>MetricScenes</strong> dataset, our model, WildMoGe, recovers a more faithful landmark scale (43.4m) while maintaining consistent metric estimation for foreground subjects (1.4m).
+      </h2>
+    </div>
+
+
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+
+  <div class="columns is-centered has-text-centered">
+    <h2 class="title is-4">Inference with MoGe-2 and WildMoGe</h2>
+  </div>
+
+  <div class="description" style="background-color: #f0f6ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+    <p style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
+      MoGe-2 tends to predict a smaller scale for background structures on in-the-wild scenes, while WildMoGe recovers the correct scale. On ETH3D scenes, they produce similar results, with WildMoGe slightly more accurate.
+      <strong>The videos first show MoGe-2's result, then WildMoGe's result.</strong>
+    </p>
+  </div>
+  
+  <div class="video-container" id="multiview-container" style="text-align: center; justify-content: center;">
+    <!-- Videos will be inserted here by JS -->
+  </div>
+
+  <div style="margin: 30px 0;">
+    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+      <p style="margin: 0; font-weight: bold; color: #555;">SELECT AN EXAMPLE</p>
+    </div>
+    
+    <div class="thumbnails-container" id="multiview-thumbnails">
+      <!-- Thumbnails will be inserted here by JS -->
+    </div>
+  </div>
+
+  <style>
+    .thumbnails-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+    
+    .thumbnail {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background-color: #f0f0f0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .thumbnail:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .thumbnail.active {
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3), 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 768px) {
+      .thumbnail {
+        width: 120px;
+        height: 80px;
+      }
+    }
+  </style>
+
+  <script>
+    const multiviewPairs = [
+      {
+        id: 'example1',
+        name: 'Arch de Triomphe',
+        inputSrc: './static/vids/arch_de_triophm.jpg',
+        outputSrc: './static/vids/arch_de_triophm.mov'
+      },
+      {
+        id: 'example2',
+        name: 'Alexander Nevsky Cathedral',
+        inputSrc: './static/vids/alexnev.jpeg',
+        outputSrc: './static/vids/alexnev.mov'
+      },
+      {
+        id: 'example3',
+        name: 'Barcelona',
+        inputSrc: './static/vids/barcelona.jpg',
+        outputSrc: './static/vids/barcelona.mov'
+      },
+      {
+        id: 'example4',
+        name: 'Colosseum',
+        inputSrc: './static/vids/colosseum.jpg',
+        outputSrc: './static/vids/colosseum.mov'
+      },
+      {
+        id: 'example5',
+        name: 'Santuario_della_Santa_Casa_(Loreto)',
+        inputSrc: './static/vids/Santuario_della_Santa_Casa_(Loreto).jpg',
+        outputSrc: './static/vids/Santuario_della_Santa_Casa_(Loreto).mov'
+      },
+      {
+        id: 'example6',
+        name: 'SignoriaPiazza',
+        inputSrc: './static/vids/SignoriaPiazza.jpg',
+        outputSrc: './static/vids/SignoriaPiazza.mov'
+      },
+      {
+        id: 'example7',
+        name: 'ETH3D_courtyard',
+        inputSrc: './static/vids/ETH3D_courtyard.jpg',
+        outputSrc: './static/vids/ETH3D_courtyard.mov'
+      },
+      {
+        id: 'example8',
+        name: 'meadow',
+        inputSrc: './static/vids/meadow.JPG',
+        outputSrc: './static/vids/meadow.mov'
+      }
+    ];
+
+    // Wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+      const thumbnailsContainer = document.getElementById('multiview-thumbnails');
+      const multiviewContainer = document.getElementById('multiview-container');
+      
+      if (!thumbnailsContainer || !multiviewContainer) return;
+      
+      // Create thumbnails
+      multiviewPairs.forEach((pair, index) => {
+        const thumbnail = document.createElement('img');
+        thumbnail.src = pair.inputSrc;
+        thumbnail.alt = pair.name;
+        thumbnail.className = 'thumbnail';
+        thumbnail.dataset.id = pair.id;
+        if (index === 0) thumbnail.classList.add('active');
+        
+        thumbnail.addEventListener('click', () => {
+          document.querySelectorAll('.thumbnail').forEach(thumb => {
+            thumb.classList.remove('active');
+          });
+          thumbnail.classList.add('active');
+          updateMultiview(pair.id);
+        });
+        
+        thumbnailsContainer.appendChild(thumbnail);
+      });
+      
+      function updateMultiview(pairId) {
+        const pair = multiviewPairs.find(p => p.id === pairId);
+        if (!pair) return;
+        
+        multiviewContainer.innerHTML = `
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: flex-start;">
+          <!-- Leftmost Image -->
+          <div class="video-item" style="flex: 1; max-width: 35%; text-align: center;">
+            <p><b>Input Images</b></p>
+            <img src="${pair.inputSrc}" style="width: 100%; height: auto; object-fit: contain; background-color: #f0f0f0;">
+          </div>
+          <!-- Ours Video -->
+          <div class="video-item" style="flex: 1; max-width: 65%; text-align: center;">
+            <p><b>Output (MoGe-2 vs WildMoGe)</b></p>
+            <video autoplay muted loop playsinline style="width: 100%; height: auto; object-fit: cover; border-radius: 10px; border: 1px solid #ccc;">
+              <source src="${pair.outputSrc}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      `;
+      }
+      
+      // Initialize with the first pair
+      updateMultiview(multiviewPairs[0].id);
+    });
+
+    // If the page is already loaded, run the initialization
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      const thumbnailsContainer = document.getElementById('multiview-thumbnails');
+      const multiviewContainer = document.getElementById('multiview-container');
+      
+      if (thumbnailsContainer && multiviewContainer) {
+        // Clear containers in case this function runs multiple times
+        thumbnailsContainer.innerHTML = '';
+        
+        // Create thumbnails
+        multiviewPairs.forEach((pair, index) => {
+          const thumbnail = document.createElement('img');
+          thumbnail.src = pair.inputSrc;
+          thumbnail.alt = pair.name;
+          thumbnail.className = 'thumbnail';
+          thumbnail.dataset.id = pair.id;
+          if (index === 0) thumbnail.classList.add('active');
+          
+          thumbnail.addEventListener('click', () => {
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+              thumb.classList.remove('active');
+            });
+            thumbnail.classList.add('active');
+            updateMultiview(pair.id);
+          });
+          
+          thumbnailsContainer.appendChild(thumbnail);
+        });
+        
+        // Initialize with the first pair
+        updateMultiview(multiviewPairs[0].id);
+      }
+      
+      function updateMultiview(pairId) {
+        const pair = multiviewPairs.find(p => p.id === pairId);
+        if (!pair) return;
+        
+        multiviewContainer.innerHTML = `
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: flex-start;">
+          <!-- Leftmost Image -->
+          <div class="video-item" style="flex: 1; max-width: 35%; text-align: center;">
+            <p><b>Input Images</b></p>
+            <img src="${pair.inputSrc}" style="width: 100%; height: auto; object-fit: contain; background-color: #f0f0f0;">
+          </div>
+          <!-- Ours Video -->
+          <div class="video-item" style="flex: 1; max-width: 65%; text-align: center;">
+            <p><b>Output (Ours)</b></p>
+            <video autoplay muted loop playsinline style="width: 100%; height: auto; object-fit: cover; border-radius: 10px; border: 1px solid #ccc;">
+              <source src="${pair.outputSrc}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      `;
+      }
+    }
+  </script>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- <div class="divider_horizontal"></div> -->
+  <div style="height: 2px; background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.7) 5%, rgba(52, 152, 219, 0.7) 95%, transparent); margin: 20px 0 20px;"></div>
+
+
+
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Metric scale monocular geometry estimation has seen significant progress through large-scale data aggregation, yet current foundation models suffer from a persistent ''scale-collapse'' phenomenon: distant landmarks and vast landscapes are metrically underestimated. This performance gap stems from a training data bottleneck, where existing metric-scale datasets are hardware-constrained to unvaried street-level LiDAR or short-range indoor scans, or consist of synthetic data that lacks the semantic complexity of the physical world. To bridge this gap, we curate a new metrically-grounded, in-the-wild dataset that we call Metricscenes, gathered from a variety of sources including Internet photo collections and stereo imagery. We estimate camera poses and initial depth maps for each scene using off-the-shelf methods, and recover absolute scale from geo-tagged metadata as well as known stereo camera baselines. We also improve the quality of depth maps derived from MetricScenes via a new two-stage Poisson completion method. Fine-tuning MoGe-2 on our dataset significantly mitigates scale-collapse and achieves superior metric accuracy in unconstrained, open-domain scenes while maintaining state-of-the-art performance on standard benchmarks.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+       
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="columns is-centered has-text-centered">
+        <h2 class="title is-3">The MetricScenes Dataset</h2>
+      </div>
+          <div class="description" style="background-color: #f0f6ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+            <p style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
+              To fill critical gaps and add diversity missing in existing real-world metric datasets,
+              we leverage widely available visual sources, including Internet photo collections and stereo imagery.
+              These sources provide the environmental and semantic variety missing from existing hardware-constrained datasets.
+              We reconstruct camera viewpoints and initial depth maps via off-the-shelf methods, then recover absolute physical scale by leveraging geolocated landmark metadata and stereo camera baselines.
+              Specifically, we aggregate data from <strong>MegaScenes</strong>, <strong>AerialMegaDepth</strong>, and <strong>Stereo4D</strong>, and develop pipelines to extract metric-scale depth maps in each case.
+            </p>
+          </div>
+          <img src="./static/images/dataset_overview.png" style="margin-top: 20px;"/>
+          <figcaption>
+            The <strong>MetricScenes</strong> dataset contains 29,583 images across 356 scenes from MegaScenes, 47,579 images from 134 scenes in Aerial-MegaDepth (only real-world images), and 22,549 frames from 1,725 videos in Stereo4D. 
+          </figcaption>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="columns is-centered has-text-centered">
+        <h2 class="title is-3">Recover Metric Scales</h2>
+      </div>
+          <img src="./static/images/aerialmd_megasc_process.png" style="margin-top: 20px;"/>
+          <p>
+            <strong>Metric depth from Internet photo collections.</strong> Geo-tagged images obtained from online mapping sites can be used to scale SfM results to absolute metric scale. 
+            AerialMegaDepth is reconstructed with pseudo-synthetic views rendered from Google Earth and scenes are scaled accordingly. 
+            MegaScenes contains natively unscaled SfM results. 
+            We augment these SfM models with georeferenced street-level views to scale the geometry to physical dimensions. 
+            After scaling and running MVS, we apply a depth filtering method to remove transient objects(yellow box) and filter out depth-bleeding regions(red box).
+          </p>
+
+          <img src="./static/images/pi3_pipeline.png" style="margin-top: 20px;"/>
+          <figcaption>
+            <strong>Metric Depth from Stereo4D.</strong> Top: Standard stereo matching often produces distorted geometry in poorly calibrated in-the-wild videos, as seen in the converging facades (magenta boxes).
+            Among multi-view models, PiCube maintains the most robust geometry and sharp local details (cyan boxes). 
+            Bottom: We process stereoscopic sequences via PiCube to obtain dense geometry and poses, then compute a global scale factor to align the predicted baseline with the camera's physical baseline. 
+            This yields accurately scaled metric depth maps.
+          </figcaption>
+          
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- <section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="columns is-centered has-text-centered">
+        <h2 class="title is-3">Dataset Layout</h2>
+      </div>
+          <p>
+            layout: depends on how joseph you decide to organize the directories and subdirectories? e.g. grouped by first two letters 
+
+          </p>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+
+<section class="section" style="margin-bottom: 10px; padding-bottom: 0px;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="columns is-centered has-text-centered">
+        <h2 class="title is-3">Depth Fusion and Completion</h2>
+      </div>
+          <div class="description" style="background-color: #f0f6ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+            <p style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
+              We observe that depth maps derived from SfM and MVS often lack foreground transients.
+              Naive Poisson completion fails here because the gradient guidance produced by monocular models also suffer from scale-collapse,
+              causing the solver to unnaturally enlarge foreground objects or distort boundaries.
+              To remedy this, we propose a two-stage edge-aware Poisson completion algorithm that decouples background metric alignment from foreground integration, ensuring sharp boundaries and consistent metric scale throughout the view.
+            </p>
+          </div>
+          <img src="./static/images/poisson_completion.png" style="margin-top: 20px;"/>
+          <figcaption>
+            <strong>Stage 1</strong> performs a Poisson solve using the gradient guidance of MoGe-2's depth map, 
+            constrained by the filtered MVS results. This yields a base depth map with an accurate background scale, 
+            though the foreground exhibits scale-drift. 
+            In <strong>Stage 2</strong>, the background isolated from the base depth map (base BG) and the MoGe-2 foreground (MoGe-2 FG) serve as joint anchors for the final completion.
+            We perform an edge-weighted Poisson solve using these anchors, reusing MoGe-2's gradient guidance to produce a globally consistent metric depth map with sharp local details.
+          </figcaption>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="columns is-centered has-text-centered">
+        <h2 class="title is-4">WildMoGe</h2>
+      </div>
+      <p>WildMoGe is MoGe-2 ViT-Large-Normal model fine-tuned the on our MetricScenes dataset. </p>
+      <img src="./static/images/qualitative_result.png"/>
+      <figcaption> <strong>Metrology of novel in-the-wild scenes.</strong> The first column shows images with measurements obtained via Google Map's measuring tool. 
+        We merge WildMoGe and MoGe-2's results into a single column to highlight the accurate scaling achieved by our training scheme. 
+        WildMoGe consistently recovers more accurate absolute scales across diverse landmarks, whereas MoGe-2, DepthAnything v3 and Metric3D v2 exhibit scale-collapse, 
+        underestimating the scale of background structures. While Unidepth v2 produces more realistic scales, they still deviate from ground truth. 
+        DepthPro often produces scales orders of magnitude smaller than reality. </figcaption>
+      <img src="./static/images/conventional_comparison.png"/>
+      <figcaption> <strong>Comparison on the standard scenes.</strong> We compare WildMoGe against MoGe-2 on representative indoor and street-level scenes. 
+        In standard indoor and street contexts (Rows 1 & 2), WildMoGe provides scale estimates consistent with MoGe-2. On the ETH3D courtyard scene (Row 3), WildMoGe achieves better accuracy, recovering a desk leg height of 71.6cm compared to the 72cm ground truth. 
+        This implies that WildMoGe's performance is driven by precise metric grounding rather than a bias toward larger scales.</figcaption>
+    
+      </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="columns is-centered has-text-centered">
+        <h2 class="title is-4">Quantitative Evaluations</h2>
+      </div>
+      <div class="description" style="background-color: #f0f6ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+        <p style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
+          We evaluate on our curated test set and the standard benchmarks to demonstrate that our model is comparable to state-of-the-art performance in specialized environments while effectively bridging the gap between hardware-constrained training data and unconstrained, in-the-wild scenarios.
+        </p>
+      </div>
+      <img src="./static/images/main_tab.png"/>
+      <figcaption> <strong>Quantitative evaluation of relative and metric geometry.</strong> 
+        The top section evaluates on the standard benchmarks, while the bottom section evaluates on MetricScenes test set. 
+        Metrics are color-coded: red (best) and yellow (second best).</figcaption>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<!-- Carousel Styles -->
+<style>
+  /* General Carousel Styling */
+  .carousel-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin: 10px auto;
+  }
+
+  .carousel-wrapper {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+  }
+
+  .carousel {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  /* Each Video Pair */
+  .video-pair {
+    display: flex;
+    flex-direction: column; /* Arrange videos in two rows */
+    justify-content: center;
+    align-items: center;
+    flex: 0 0 100%; /* Each pair takes full width */
+  }
+
+  /* Rows for Videos */
+  .baseline-row,
+  .ours-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5px 0;
+    gap: 5px;
+  }
+
+  .baseline-row video,
+  .ours-row video {
+    width: 80%; /* Adjust for larger video size */
+    max-width: 800px;
+    height: auto;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+  }
+
+  /* Caption Styling */
+  .caption {
+    margin-top: 0px;
+    font-size: 10pt;
+    color: #555;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+</style>
+
+
+
+
+
+
+<footer class="footer">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is borrowed from <a href="https://nerfies.github.io/">Nerfies</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
