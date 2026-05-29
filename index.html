@@ -122,9 +122,10 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <img src="./static/images/MetricScens_teaser.png"
-        class="interpolation-image"
-        alt="Interpolate start reference image."/>
+      <video autoplay muted loop playsinline class="interpolation-image">
+        <source src="./static/vids/teaser.mov" type="video/quicktime">
+        Your browser does not support the video tag.
+      </video>
       <h2 class="subtitle has-text-centered">
         State-of-the-art monocular geometry estimation (MGE) methods like MoGe-2 exhibit a persistent scale-collapse phenomenon, where far-field structures are metrically shrunk and pulled toward the camera. 
         According to Wikipedia, the real Arc de Triomphe has a physical width of 44.8m, but MoGe-2 predicts a metric point cloud of width just 18.8m. 
@@ -292,7 +293,7 @@
         <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: flex-start;">
           <!-- Leftmost Image -->
           <div class="video-item" style="flex: 1; max-width: 35%; text-align: center;">
-            <p><b>Input Images</b></p>
+            <p><b>Input Image</b></p>
             <img src="${pair.inputSrc}" style="width: 100%; height: auto; object-fit: contain; background-color: #f0f0f0;">
           </div>
           <!-- Ours Video -->
@@ -387,7 +388,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Metric scale monocular geometry estimation has seen significant progress through large-scale data aggregation, yet current foundation models suffer from a persistent ''scale-collapse'' phenomenon: distant landmarks and vast landscapes are metrically underestimated. This performance gap stems from a training data bottleneck, where existing metric-scale datasets are hardware-constrained to unvaried street-level LiDAR or short-range indoor scans, or consist of synthetic data that lacks the semantic complexity of the physical world. To bridge this gap, we curate a new metrically-grounded, in-the-wild dataset that we call Metricscenes, gathered from a variety of sources including Internet photo collections and stereo imagery. We estimate camera poses and initial depth maps for each scene using off-the-shelf methods, and recover absolute scale from geo-tagged metadata as well as known stereo camera baselines. We also improve the quality of depth maps derived from MetricScenes via a new two-stage Poisson completion method. Fine-tuning MoGe-2 on our dataset significantly mitigates scale-collapse and achieves superior metric accuracy in unconstrained, open-domain scenes while maintaining state-of-the-art performance on standard benchmarks.
+            Metric scale monocular geometry estimation has seen significant progress through large-scale data aggregation, yet current foundation models suffer from a persistent ''scale-collapse'' phenomenon: distant landmarks and vast landscapes are metrically underestimated. We hypothesize that this performance gap stems from a training data bottleneck, where existing metric-scale datasets are hardware-constrained to homogenous vehicle-captured LiDAR or short-range indoor scans, or consist of synthetic data that lacks the semantic complexity of the physical world. To bridge this gap, we curate a new metrically-grounded, in-the-wild dataset that we call MetricScenes, gathered from a variety of sources including Internet photo collections and stereo imagery. We estimate camera poses and initial depth maps for each scene using off-the-shelf methods, and recover absolute scale from geo-tagged metadata as well as known stereo camera baselines. We also improve the quality of depth maps derived from MetricScenes via a new two-stage Poisson completion method. Fine-tuning MoGe-2 on our dataset significantly mitigates scale-collapse and achieves superior metric accuracy in unconstrained, open-domain scenes while maintaining state-of-the-art performance on standard benchmarks.
           </p>
         </div>
       </div>
@@ -431,7 +432,7 @@
     <div class="columns is-centered">
       <div class="column is-four-fifths">
         <div class="columns is-centered has-text-centered">
-        <h2 class="title is-3">Recover Metric Scales</h2>
+        <h2 class="title is-3">Recovering Metric Scale in Training Data</h2>
       </div>
           <img src="./static/images/aerialmd_megasc_process.png" style="margin-top: 20px;"/>
           <p>
@@ -483,10 +484,13 @@
       </div>
           <div class="description" style="background-color: #f0f6ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
             <p style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
-              We observe that depth maps derived from SfM and MVS often lack foreground transients.
-              Naive Poisson completion fails here because the gradient guidance produced by monocular models also suffer from scale-collapse,
+              Depth maps derived from SfM and MVS lack transient foreground objects.
+              Naive Poisson completion reconstructs missing regions by aligning the gradient of the predicted depth at local regions while maintaining the ground truth depth as the
+              boundary condition.
+              This approach fails here because the gradient guidance produced by monocular models (e.g. MoGe-2) also suffer from scale-collapse,
               causing the solver to unnaturally enlarge foreground objects or distort boundaries.
-              To remedy this, we propose a two-stage edge-aware Poisson completion algorithm that decouples background metric alignment from foreground integration, ensuring sharp boundaries and consistent metric scale throughout the view.
+              To remedy this, we propose a two-stage edge-aware Poisson completion algorithm that fuses MVS depth maps (background) with MoGe-2 predicted depth maps (foreground),
+              decoupling background metric alignment from foreground integration, ensuring sharp boundaries and consistent metric scale throughout the view.
             </p>
           </div>
           <img src="./static/images/poisson_completion.png" style="margin-top: 20px;"/>
@@ -510,7 +514,7 @@
         <div class="columns is-centered has-text-centered">
         <h2 class="title is-4">WildMoGe</h2>
       </div>
-      <p>WildMoGe is MoGe-2 ViT-Large-Normal model fine-tuned the on our MetricScenes dataset. </p>
+      <p>WildMoGe is a MoGe-2 ViT-Large-Normal model fine-tuned the on our MetricScenes dataset. </p>
       <img src="./static/images/qualitative_result.png"/>
       <figcaption> <strong>Metrology of novel in-the-wild scenes.</strong> The first column shows images with measurements obtained via Google Map's measuring tool. 
         We merge WildMoGe and MoGe-2's results into a single column to highlight the accurate scaling achieved by our training scheme. 
