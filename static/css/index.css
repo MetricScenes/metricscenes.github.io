@@ -28,6 +28,12 @@ body {
   padding-bottom: 3rem;
 }
 
+.teaser .interpolation-image {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
 .teaser {
   font-family: 'Google Sans', sans-serif;
 }
