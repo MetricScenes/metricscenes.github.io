@@ -457,24 +457,6 @@
 </section>
 
 
-
-<!-- <section class="section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-four-fifths">
-        <div class="columns is-centered has-text-centered">
-        <h2 class="title is-3">Dataset Layout</h2>
-      </div>
-          <p>
-            layout: depends on how joseph you decide to organize the directories and subdirectories? e.g. grouped by first two letters 
-
-          </p>
-      </div>
-    </div>
-  </div>
-</section> -->
-
-
 <section class="section" style="margin-bottom: 10px; padding-bottom: 0px;">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
@@ -484,23 +466,31 @@
       </div>
           <div class="description" style="background-color: #f0f6ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
             <p style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
-              Depth maps derived from SfM and MVS lack transient foreground objects.
-              Naive Poisson completion reconstructs missing regions by aligning the gradient of the predicted depth at local regions while maintaining the ground truth depth as the
-              boundary condition.
-              This approach fails here because the gradient guidance produced by monocular models (e.g. MoGe-2) also suffer from scale-collapse,
-              causing the solver to unnaturally enlarge foreground objects or distort boundaries.
-              To remedy this, we propose a two-stage edge-aware Poisson completion algorithm that fuses MVS depth maps (background) with MoGe-2 predicted depth maps (foreground),
-              decoupling background metric alignment from foreground integration, ensuring sharp boundaries and consistent metric scale throughout the view.
+              Depth maps derived from SfM and MVS lack transient foreground objects. 
+              To fill these gaps, naive Poisson completion uses the MVS depth map as a fixed boundary condition, and rely on the gradient guidance of model-predicted depth maps to reconstruct the missing areas.
             </p>
           </div>
-          <img src="./static/images/poisson_completion.png" style="margin-top: 20px;"/>
+          <img src="./static/images/naive_poisson.png" style="margin-top: 20px;"/>
           <figcaption>
-            <strong>Stage 1</strong> performs a Poisson solve using the gradient guidance of MoGe-2's depth map, 
-            constrained by the filtered MVS results. This yields a base depth map with an accurate background scale, 
-            though the foreground exhibits scale-drift. 
-            In <strong>Stage 2</strong>, the background isolated from the base depth map (base BG) and the MoGe-2 foreground (MoGe-2 FG) serve as joint anchors for the final completion.
-            We perform an edge-weighted Poisson solve using these anchors, reusing MoGe-2's gradient guidance to produce a globally consistent metric depth map with sharp local details.
+            <strong>Naive Poisson completion </strong> often fails to produce accurate depth maps because the predicted depth maps (e.g. by MoGe-2) used for guidance suffer from scale-collapse,
+              causing the solver to unnaturally enlarge foreground objects or distort boundaries.
           </figcaption>
+          <div class="description" style="background-color: #f0f6ff; padding: 15px; border-radius: 12px; margin-top: 24px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+            <p style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
+              To remedy this, instead of relying solely on background constraints, our key insight is to use both background and foreground depths as joint anchors while carefully optimizing object edges.
+              We propose to fuse MVS depth maps (background) with MoGe-2 predicted depth maps (foreground),
+              with a <strong>two-stage edge-aware Poisson completion algorithm</strong>.
+            </p>
+          </div>   
+          <img src="./static/images/poisson_completion.png" style="margin-top: 20px;"/>
+            <figcaption>
+              <strong>Stage 1</strong> performs a Poisson solve using the gradient guidance of MoGe-2's depth map, 
+              constrained by the filtered MVS results. This yields a base depth map with an accurate background scale, 
+              though the foreground exhibits scale-drift. 
+              <br>
+              In <strong>Stage 2</strong>, the background isolated from the base depth map (base BG) and the MoGe-2 foreground (MoGe-2 FG) serve as joint anchors for the final completion.
+              We perform an edge-weighted Poisson solve using these anchors, reusing MoGe-2's gradient guidance to produce a globally consistent metric depth map with sharp local details.
+            </figcaption>
       </div>
     </div>
   </div>
