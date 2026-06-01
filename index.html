@@ -126,11 +126,12 @@
         <source src="./static/vids/teaser.mov" type="video/mp4">
         Your browser does not support the video tag.
       </video>
-      <h2 class="subtitle has-text-centered">
+      <figcaption>
         State-of-the-art monocular geometry estimation (MGE) methods like MoGe-2 exhibit a persistent scale-collapse phenomenon, where far-field structures are metrically shrunk and pulled toward the camera. 
         According to Wikipedia, the real Arc de Triomphe has a physical width of 44.8m, but MoGe-2 predicts a metric point cloud of width just 18.8m. 
         By fine-tuning on our proposed <strong>MetricScenes</strong> dataset, our model, WildMoGe, recovers a more faithful landmark scale (43.4m) while maintaining consistent metric estimation for foreground subjects (1.4m).
-      </h2>
+      </figcaption>
+
     </div>
 
 
@@ -210,7 +211,7 @@
     const multiviewPairs = [
       {
         id: 'example1',
-        name: 'Arch de Triomphe',
+        name: 'Arc de Triomphe',
         inputSrc: './static/vids/arch_de_triophm.jpg',
         outputSrc: './static/vids/arch_de_triophm_labeled.mov'
       },
@@ -440,7 +441,7 @@
             AerialMegaDepth is reconstructed with pseudo-synthetic views rendered from Google Earth and scenes are scaled accordingly. 
             MegaScenes contains natively unscaled SfM results. 
             We augment these SfM models with georeferenced street-level views to scale the geometry to physical dimensions. 
-            After scaling and running MVS, we apply a depth filtering method to remove transient objects(yellow box) and filter out depth-bleeding regions(red box).
+            After scaling and running MVS, we apply a depth filtering method to remove transient objects (yellow box) and filter out depth-bleeding regions (red box).
           </p>
 
           <img src="./static/images/pi3_pipeline.png" style="margin-top: 20px;"/>
@@ -467,7 +468,7 @@
           <div class="description" style="background-color: #f0f6ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
             <p style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
               Depth maps derived from SfM and MVS lack transient foreground objects. 
-              To fill these gaps, naive Poisson completion uses the MVS depth map as a fixed boundary condition, and rely on the gradient guidance of model-predicted depth maps to reconstruct the missing areas.
+              To fill these gaps, naive Poisson completion uses the MVS depth map as a fixed boundary condition, and relies on the gradient guidance of model-predicted depth maps to reconstruct the missing areas.
             </p>
           </div>
           <img src="./static/images/naive_poisson.png" style="margin-top: 20px;"/>
@@ -504,17 +505,19 @@
         <div class="columns is-centered has-text-centered">
         <h2 class="title is-4">WildMoGe</h2>
       </div>
-      <p>WildMoGe is a MoGe-2 ViT-Large-Normal model fine-tuned the on our MetricScenes dataset. </p>
+      <p>WildMoGe is a MoGe-2 ViT-Large-Normal model fine-tuned on our MetricScenes dataset. </p>
       <img src="./static/images/qualitative_result.png"/>
-      <figcaption> <strong>Metrology of novel in-the-wild scenes.</strong> The first column shows images with measurements obtained via Google Map's measuring tool. 
+      <figcaption> <strong>Metrology of novel in-the-wild scenes.</strong> The first column shows images with measurements obtained via Google Maps' measuring tool. 
         We merge WildMoGe and MoGe-2's results into a single column to highlight the accurate scaling achieved by our training scheme. 
         WildMoGe consistently recovers more accurate absolute scales across diverse landmarks, whereas MoGe-2, DepthAnything v3 and Metric3D v2 exhibit scale-collapse, 
         underestimating the scale of background structures. While Unidepth v2 produces more realistic scales, they still deviate from ground truth. 
         DepthPro often produces scales orders of magnitude smaller than reality. </figcaption>
+        <br>
+        <br>
       <img src="./static/images/conventional_comparison.png"/>
-      <figcaption> <strong>Comparison on the standard scenes.</strong> We compare WildMoGe against MoGe-2 on representative indoor and street-level scenes. 
+      <figcaption> <strong>Comparison on standard scenes.</strong> We compare WildMoGe against MoGe-2 on representative indoor and street-level scenes. 
         In standard indoor and street contexts (Rows 1 & 2), WildMoGe provides scale estimates consistent with MoGe-2. On the ETH3D courtyard scene (Row 3), WildMoGe achieves better accuracy, recovering a desk leg height of 71.6cm compared to the 72cm ground truth. 
-        This implies that WildMoGe's performance is driven by precise metric grounding rather than a bias toward larger scales.</figcaption>
+        This suggests that WildMoGe's performance is driven by precise metric grounding rather than a bias toward larger scales.</figcaption>
     
       </div>
   </div>
@@ -530,7 +533,7 @@
       </div>
       <div class="description" style="background-color: #f0f6ff; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
         <p style="max-width: 800px; margin: 0 auto; line-height: 1.6;">
-          We evaluate on our curated test set and the standard benchmarks to demonstrate that our model is comparable to state-of-the-art performance in specialized environments while effectively bridging the gap between hardware-constrained training data and unconstrained, in-the-wild scenarios.
+          We evaluate on our curated test set and the standard benchmarks to demonstrate that our model achieves performance comparable to the state-of-the-art in specialized environments while effectively bridging the gap between hardware-constrained training data and unconstrained, in-the-wild scenarios.
         </p>
       </div>
       <img src="./static/images/main_tab.png"/>
